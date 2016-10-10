@@ -1,10 +1,12 @@
 ﻿# Calculators
-C#用数式処理
+C#用数式処理クラス
 ======================
 文字列などで指定される式から答えを求めるクラスです。 
+"( 1 + 2 ) * 3"等の式を渡すと答え(=9)が得られます。 
 
 言語・開発環境
 ------
+C#/.NET Framework 4.0/VisualStudio2015 
 
 使い方
 ------
@@ -18,14 +20,20 @@ Program.cs が簡易テスト用のドライバになっています。
 関連情報
 ------
 １、計算はすべてdouble型で行われます 
+２、実装されている演算子や関数の一覧は、CalculatorItemBase.csのOperatorKeyWordを参照のこと 
+３、乗算・除算は加算・減算よりも優先される仕様です 
 
 ライセンス
 ------
 ライセンスを適用するファイルにはライセンスについての記述があります。  
 The MIT License (MIT)  
 Copyright (c) 2016 ZZO  
+see also 'LICENSE' file 
 
 履歴
 -----
-2016/10/9 ZZO(68B09)   
-First release.
+2016/10/10 ZZO(68B09) 
+値が破壊されないように仕様を変更
+
+2016/10/9 ZZO(68B09) 
+First release. 

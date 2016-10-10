@@ -23,6 +23,7 @@ SOFTWARE.
 
 [Update History]
 2016/10/09	ZZO(68B09)	First Release.
+2016/10/10	ZZO(68B09)	値及び演算スタックを専用クラスに置き換え
 */
 
 using System;
@@ -48,12 +49,12 @@ namespace Calculators
 		/// <summary>
 		/// 値スタック
 		/// </summary>
-		private Stack<CalculatorValue> mStackValue = new Stack<CalculatorValue>();
+		private ValueStack mStackValue = new ValueStack();
 
 		/// <summary>
 		/// 演算子スタック
 		/// </summary>
-		private Stack<CalculatorOperatorBase> mStackOperator = new Stack<CalculatorOperatorBase>();
+		private OperatorStack mStackOperator = new OperatorStack();
 
 		/// <summary>
 		/// 要素要求イベント
@@ -224,8 +225,30 @@ namespace Calculators
 				ope.Calculation(this.mStackValue);
 			}
 
+			if (this.mStackValue.Count != 1) {
+				throw new InvalidArithmeticExpressionException("値がスタックに残っています");
+			}
+
 			return this.mStackValue.Pop();
 		}
 		#endregion
 	}
+
+	#region ValueStack
+	/// <summary>
+	/// 値スタッククラス
+	/// </summary>
+	public class ValueStack : Stack<CalculatorValue>
+	{
+	}
+	#endregion
+
+	#region OperatorStack
+	/// <summary>
+	/// 演算子スタッククラス
+	/// </summary>
+	public class OperatorStack : Stack<CalculatorOperatorBase>
+	{
+	}
+	#endregion
 }

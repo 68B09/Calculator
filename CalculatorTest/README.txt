@@ -24,7 +24,7 @@ FOR EXAMPLE
 
 1.基本形
 	Calculator calc = new Calculator();
-	calc.Entry(～); ← 以降は主にココの記述について
+	calc.EntryLine("1 + 2"); ← "2."以降は主にココの記述について
 	CalculatorValue ans = calc.GetAnswer();
 	WriteLine( ans.Value );
 
@@ -39,12 +39,14 @@ FOR EXAMPLE
 
 	・三角関数が使用する角度はラジアンです
 
-	・Entry()で登録した値は破壊されます
-	　破壊されると困る場合はコピーを渡してください。
-
 	・関数(CalculatorOperatorOpenクラスもしくは派生クラス)は、必ず閉じ括弧で括ってください
 	  閉じ括弧が足りない場合は式の末尾に閉じ括弧があるものとして計算されます。
 	  (ex)"5 * ( 4 / ( 3 + 2" → "5 * ( 4 / ( 3 + 2 ) )"
+
+	・式の正当性は評価しないため、不正な式には注意してください
+	  (ex) 以下は、GetAnswer()を呼んだときに初めて例外が投げられます
+	  "1 2 + 3"
+	  "+ 2"
 
 3.Entry(object)
 	・Entry()は値や演算子を１つだけ登録するために使用します
@@ -113,11 +115,11 @@ FOR EXAMPLE
 		ans = calc2.GetAnswer();	// ans.Value is 200
 
 7."D2R"および"R2D"、"PI"、"E"について
-	"D2R"はCalculatorOperatorDegToRad()、"R2D"はCalculatorOperatorRadToDeg()が実体です。
+	"D2R"はCalculatorOperatorDegToRad、"R2D"はCalculatorOperatorRadToDegインスタンスが作成されます。
 	"D2R"はDegree→Radian、"R2D"はRadian→Degree変換を行います。
-	(ex) "D2R( 180 )" → π
+	(ex) "D2R( 180 )" → 3.1415926…
 
-	"PI"はπ(Math.PI)、"E"はe(Math.E)を表します。
+	"PI"はπ(Math.PI)、"E"はe(Math.E)を表す値が生成されます。
 
 8.独自演算子や関数実装方法
 	・三角関数のような「引数１つ」のタイプ
@@ -130,18 +132,20 @@ FOR EXAMPLE
 
 	・独自演算子はEntry(CalculatorItemBase)で登録してください
 
-	・直接Calculatorsに追加を行うのであれば以下の２つも編集しておくと良いです
+	・直接Calculators名前空間に追加を行うのであれば、以下の２つも編集しておくと文字列から各種インスタンスが生成できて便利です
 		Calculators.OperatorKeyWord
 		Calculators.CalculatorItemBase.InstanceTable
 
 		尚、関数(引数１つ)型をOperatorKeyWordに登録する際は、閉じ括弧が必要とわかるようにするためにキーワードの末尾に'('を付加してください。
 
 9.値の破壊防止方法
-	Entry()で登録した値オブジェクトのValue値は破壊されます。
-	防止するにはコピーを渡してください。
-	(ex)
-	CalculatorValue valItem = new CalculatorValue( *** );
-	Entry( new CalculatorValue( valItem ) );	// Entry Copy-Object
+	※2016/10/10の修正で、値は破壊されなくなりました。
+
+	<del>Entry()で登録した値オブジェクトのValue値は破壊されます。
+	<del>防止するにはコピーを渡してください。
+	<del>(ex)
+	<del>CalculatorValue valItem = new CalculatorValue( *** );
+	<del>Entry( new CalculatorValue( valItem ) );	// Entry Copy-Object
 
 Etc...
 	・テストコードはMain()に書いています
@@ -150,3 +154,4 @@ Etc...
 ------------------------------------------------------------------------------
 [Update History]
 2016/10/09	ZZO(MB68B09)	First Release.
+2016/10/10	ZZO(MB68B09)	演算時に、スタックに積まれた値要素を破壊しないように変更

@@ -23,6 +23,8 @@ SOFTWARE.
 
 [Update History]
 2016/10/09	ZZO(68B09)	First Release.
+2016/10/10	ZZO(68B09)	演算時にスタックに積まれた値要素を破壊しないように変更
+						v1 = v1 op v2 → v3 = v1 op v2
 */
 
 using System;
@@ -124,9 +126,45 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public virtual void Calculation(Stack<CalculatorValue> pStackValue)
+		public virtual void Calculation(ValueStack pStackValue)
 		{
 			throw new NotImplementedException();
+		}
+		#endregion
+
+		#region 内部メソッド
+		/// <summary>
+		/// １値取得
+		/// </summary>
+		/// <param name="pValueStack">ValueStack</param>
+		/// <param name="pValue1">値１</param>
+		/// <returns>値１のコピー(pValueStackの先頭にpush済み)</returns>
+		protected virtual CalculatorValue Get1Value(ValueStack pValueStack, out CalculatorValue pValue1)
+		{
+			pValue1 = pValueStack.Pop();
+
+			// pValue1破壊防止のため、身代わりのコピーを作ってスタックに積む
+			CalculatorValue newValue = new CalculatorValue(pValue1);
+			pValueStack.Push(newValue);
+			return newValue;
+		}
+
+		/// <summary>
+		/// ２値取得
+		/// </summary>
+		/// <param name="pValueStack">ValueStack</param>
+		/// <param name="pValue1">値１</param>
+		/// <param name="pValue2">値２</param>
+		/// <returns>値１のコピー(pValueStackの先頭にpush済み)</returns>
+		protected virtual CalculatorValue Get2Value(ValueStack pValueStack, out CalculatorValue pValue1, out CalculatorValue pValue2)
+		{
+			pValue2 = pValueStack.Pop();
+			pValue1 = pValueStack.Pop();
+
+			// pValue1破壊防止のため、身代わりのコピーを作ってスタックに積む
+			CalculatorValue newValue = new CalculatorValue(pValue1);
+			pValueStack.Push(newValue);
+			return newValue;
 		}
 		#endregion
 	}
@@ -147,7 +185,7 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
 		}
 	}
@@ -179,12 +217,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v2 = pStackValue.Pop();
-			CalculatorValue v1 = pStackValue.Peek();
+			CalculatorValue v1, v2;
+			CalculatorValue newValue = this.Get2Value(pStackValue, out v1, out v2);
 
-			v1.Value += v2.Value;
+			newValue.Value = v1.Value + v2.Value;
 		}
 	}
 	#endregion
@@ -203,12 +241,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v2 = pStackValue.Pop();
-			CalculatorValue v1 = pStackValue.Peek();
+			CalculatorValue v1, v2;
+			CalculatorValue newValue = this.Get2Value(pStackValue, out v1, out v2);
 
-			v1.Value -= v2.Value;
+			newValue.Value = v1.Value - v2.Value;
 		}
 	}
 	#endregion
@@ -227,12 +265,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v2 = pStackValue.Pop();
-			CalculatorValue v1 = pStackValue.Peek();
+			CalculatorValue v1, v2;
+			CalculatorValue newValue = this.Get2Value(pStackValue, out v1, out v2);
 
-			v1.Value *= v2.Value;
+			newValue.Value = v1.Value * v2.Value;
 		}
 	}
 	#endregion
@@ -251,12 +289,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v2 = pStackValue.Pop();
-			CalculatorValue v1 = pStackValue.Peek();
+			CalculatorValue v1, v2;
+			CalculatorValue newValue = this.Get2Value(pStackValue, out v1, out v2);
 
-			v1.Value /= v2.Value;
+			newValue.Value = v1.Value / v2.Value;
 		}
 	}
 	#endregion
@@ -275,12 +313,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v2 = pStackValue.Pop();
-			CalculatorValue v1 = pStackValue.Peek();
+			CalculatorValue v1, v2;
+			CalculatorValue newValue = this.Get2Value(pStackValue, out v1, out v2);
 
-			v1.Value %= v2.Value;
+			newValue.Value = v1.Value % v2.Value;
 		}
 	}
 	#endregion
@@ -299,12 +337,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v2 = pStackValue.Pop();
-			CalculatorValue v1 = pStackValue.Peek();
+			CalculatorValue v1, v2;
+			CalculatorValue newValue = this.Get2Value(pStackValue, out v1, out v2);
 
-			v1.Value = Math.Max(v1.Value, v2.Value);
+			newValue.Value = Math.Max(v1.Value, v2.Value);
 		}
 	}
 	#endregion
@@ -323,12 +361,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v2 = pStackValue.Pop();
-			CalculatorValue v1 = pStackValue.Peek();
+			CalculatorValue v1, v2;
+			CalculatorValue newValue = this.Get2Value(pStackValue, out v1, out v2);
 
-			v1.Value = Math.Min(v1.Value, v2.Value);
+			newValue.Value = Math.Min(v1.Value, v2.Value);
 		}
 	}
 	#endregion
@@ -347,12 +385,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v2 = pStackValue.Pop();
-			CalculatorValue v1 = pStackValue.Peek();
+			CalculatorValue v1, v2;
+			CalculatorValue newValue = this.Get2Value(pStackValue, out v1, out v2);
 
-			v1.Value = Math.Pow(v1.Value, v2.Value);
+			newValue.Value = Math.Pow(v1.Value, v2.Value);
 		}
 	}
 	#endregion
@@ -371,10 +409,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v1 = pStackValue.Peek();
-			v1.Value = Math.Sqrt(v1.Value);
+			CalculatorValue v1;
+			CalculatorValue newValue = this.Get1Value(pStackValue, out v1);
+
+			newValue.Value = Math.Sqrt(v1.Value);
 		}
 	}
 	#endregion
@@ -393,10 +433,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v1 = pStackValue.Peek();
-			v1.Value = Math.Floor(v1.Value);
+			CalculatorValue v1;
+			CalculatorValue newValue = this.Get1Value(pStackValue, out v1);
+
+			newValue.Value = Math.Floor(v1.Value);
 		}
 	}
 	#endregion
@@ -415,10 +457,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v1 = pStackValue.Peek();
-			v1.Value = Math.Ceiling(v1.Value);
+			CalculatorValue v1;
+			CalculatorValue newValue = this.Get1Value(pStackValue, out v1);
+
+			newValue.Value = Math.Ceiling(v1.Value);
 		}
 	}
 	#endregion
@@ -437,10 +481,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v1 = pStackValue.Peek();
-			v1.Value = Math.Round(v1.Value, MidpointRounding.AwayFromZero);
+			CalculatorValue v1;
+			CalculatorValue newValue = this.Get1Value(pStackValue, out v1);
+
+			newValue.Value = Math.Round(v1.Value, MidpointRounding.AwayFromZero);
 		}
 	}
 	#endregion
@@ -459,10 +505,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v1 = pStackValue.Peek();
-			v1.Value = Math.Sign(v1.Value);
+			CalculatorValue v1;
+			CalculatorValue newValue = this.Get1Value(pStackValue, out v1);
+
+			newValue.Value = Math.Sign(v1.Value);
 		}
 	}
 	#endregion
@@ -481,10 +529,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v1 = pStackValue.Peek();
-			v1.Value = Math.Abs(v1.Value);
+			CalculatorValue v1;
+			CalculatorValue newValue = this.Get1Value(pStackValue, out v1);
+
+			newValue.Value = Math.Abs(v1.Value);
 		}
 	}
 	#endregion
@@ -503,10 +553,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v1 = pStackValue.Peek();
-			v1.Value = Math.Sin(v1.Value);
+			CalculatorValue v1;
+			CalculatorValue newValue = this.Get1Value(pStackValue, out v1);
+
+			newValue.Value = Math.Sin(v1.Value);
 		}
 	}
 	#endregion
@@ -525,10 +577,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v1 = pStackValue.Peek();
-			v1.Value = Math.Cos(v1.Value);
+			CalculatorValue v1;
+			CalculatorValue newValue = this.Get1Value(pStackValue, out v1);
+
+			newValue.Value = Math.Cos(v1.Value);
 		}
 	}
 	#endregion
@@ -547,10 +601,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v1 = pStackValue.Peek();
-			v1.Value = Math.Tan(v1.Value);
+			CalculatorValue v1;
+			CalculatorValue newValue = this.Get1Value(pStackValue, out v1);
+
+			newValue.Value = Math.Tan(v1.Value);
 		}
 	}
 	#endregion
@@ -569,10 +625,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v1 = pStackValue.Peek();
-			v1.Value = Math.Asin(v1.Value);
+			CalculatorValue v1;
+			CalculatorValue newValue = this.Get1Value(pStackValue, out v1);
+
+			newValue.Value = Math.Asin(v1.Value);
 		}
 	}
 	#endregion
@@ -591,10 +649,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v1 = pStackValue.Peek();
-			v1.Value = Math.Acos(v1.Value);
+			CalculatorValue v1;
+			CalculatorValue newValue = this.Get1Value(pStackValue, out v1);
+
+			newValue.Value = Math.Acos(v1.Value);
 		}
 	}
 	#endregion
@@ -613,10 +673,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v1 = pStackValue.Peek();
-			v1.Value = Math.Atan(v1.Value);
+			CalculatorValue v1;
+			CalculatorValue newValue = this.Get1Value(pStackValue, out v1);
+
+			newValue.Value = Math.Atan(v1.Value);
 		}
 	}
 	#endregion
@@ -635,10 +697,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v1 = pStackValue.Peek();
-			v1.Value = Math.Sinh(v1.Value);
+			CalculatorValue v1;
+			CalculatorValue newValue = this.Get1Value(pStackValue, out v1);
+
+			newValue.Value = Math.Sinh(v1.Value);
 		}
 	}
 	#endregion
@@ -657,10 +721,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v1 = pStackValue.Peek();
-			v1.Value = Math.Cosh(v1.Value);
+			CalculatorValue v1;
+			CalculatorValue newValue = this.Get1Value(pStackValue, out v1);
+
+			newValue.Value = Math.Cosh(v1.Value);
 		}
 	}
 	#endregion
@@ -679,10 +745,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v1 = pStackValue.Peek();
-			v1.Value = Math.Tanh(v1.Value);
+			CalculatorValue v1;
+			CalculatorValue newValue = this.Get1Value(pStackValue, out v1);
+
+			newValue.Value = Math.Tanh(v1.Value);
 		}
 	}
 	#endregion
@@ -701,10 +769,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v1 = pStackValue.Peek();
-			v1.Value = Math.Log(v1.Value);
+			CalculatorValue v1;
+			CalculatorValue newValue = this.Get1Value(pStackValue, out v1);
+
+			newValue.Value = Math.Log(v1.Value);
 		}
 	}
 	#endregion
@@ -723,10 +793,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v1 = pStackValue.Peek();
-			v1.Value = Math.Log10(v1.Value);
+			CalculatorValue v1;
+			CalculatorValue newValue = this.Get1Value(pStackValue, out v1);
+
+			newValue.Value = Math.Log10(v1.Value);
 		}
 	}
 	#endregion
@@ -745,10 +817,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v1 = pStackValue.Peek();
-			v1.Value = Math.Exp(v1.Value);
+			CalculatorValue v1;
+			CalculatorValue newValue = this.Get1Value(pStackValue, out v1);
+
+			newValue.Value = Math.Exp(v1.Value);
 		}
 	}
 	#endregion
@@ -767,10 +841,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v1 = pStackValue.Peek();
-			v1.Value = v1.Value * Math.PI / 180.0;
+			CalculatorValue v1;
+			CalculatorValue newValue = this.Get1Value(pStackValue, out v1);
+
+			newValue.Value = v1.Value * Math.PI / 180.0;
 		}
 	}
 	#endregion
@@ -789,10 +865,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v1 = pStackValue.Peek();
-			v1.Value = v1.Value * 180.0 / Math.PI;
+			CalculatorValue v1;
+			CalculatorValue newValue = this.Get1Value(pStackValue, out v1);
+
+			newValue.Value = v1.Value * 180.0 / Math.PI;
 		}
 	}
 	#endregion
@@ -811,10 +889,12 @@ namespace Calculators
 		/// 演算
 		/// </summary>
 		/// <param name="pStackValue">値スタック</param>
-		public override void Calculation(Stack<CalculatorValue> pStackValue)
+		public override void Calculation(ValueStack pStackValue)
 		{
-			CalculatorValue v1 = pStackValue.Peek();
-			v1.Value = Math.Truncate(v1.Value);
+			CalculatorValue v1;
+			CalculatorValue newValue = this.Get1Value(pStackValue, out v1);
+
+			newValue.Value = Math.Truncate(v1.Value);
 		}
 	}
 	#endregion
