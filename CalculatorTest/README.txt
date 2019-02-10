@@ -147,6 +147,53 @@ FOR EXAMPLE
 	<del>CalculatorValue valItem = new CalculatorValue( *** );
 	<del>Entry( new CalculatorValue( valItem ) );	// Entry Copy-Object
 
+10.演算子・関数・定数と優先順位
+	演算子
+		加算(+)…1 + 2=3
+		減算(-)…1 - 2=-1
+		乗算(*)…1 * 2=2
+		除算(/)…1 / 2=0.5
+		剰余(%)…3 % 2=1
+		括弧()…括弧内の計算を優先
+		最大(MAX)…1 MAX 2=2
+		最小(MIN)…1 MAX 2=1
+		べき乗(^)…2 ^ 3=8
+
+	関数
+		平方根(SQRT)…SQRT(2)=1.4142…
+		床関数(FLOOR)…FLOOR(7.64)=7、FLOOR(-0.12)=-1
+		天井関数(CEILING)…CEILING(7.64)=8、CEILING(-0.12)=0
+		四捨五入(ROUND)…ROUND(7.4)=7、ROUND(7.5)=8、ROUND(-7.4)=-7、ROUND(-7.5)=-8
+		切り捨て(TRUNC)…TRUNC(7.5)=7、TRUNC(-7.5)=-7
+		符号(SIGN)…正なら1、ゼロなら0、負なら-1、SIGN(2)=1、SIGN(0)=0、SIGN(-9)=-1
+		絶対値(ABS)…ABS(1.7)=1.7、ABS(-1.7)=1.7
+		正弦(SIN)…SIN(θ)、θはRadian(他の三角関数も同様)
+		余弦(COS)…COS(θ)
+		正接(TAN)…TAN(θ)
+		逆正弦(ASIN)…ASIN(θ)
+		逆余弦(ACOS)…ACOS(θ)
+		逆正接(ATAN)…ATAN(θ)
+		双曲線正弦(HSIN)…HSIN(θ)
+		双曲線余弦(HCOS)…HCOS(θ)
+		双曲線正接(HTAN)…HTAN(θ)
+		対数(LOG)…LOG(10)=2.30258509299405
+		常用対数(LOG10)…LOG10(10)=1
+		指数(EXP)…EXP(10)=22026.4657948067
+		RadianToDegree(R2D)…R2D(PI)=180
+		DegreeToRadian(D2R)…D2R(180)=PI
+
+	定数
+		円周率(PI)…3.14159265358979
+		自然対数の底(E)…2.71828182845905
+
+	優先順位
+		(低)
+			関数
+			+-
+			*/%
+			MAX,MIN,^
+		(高)
+
 Etc...
 	・テストコードはMain()に書いています
 		使い方の参考にしてください。
